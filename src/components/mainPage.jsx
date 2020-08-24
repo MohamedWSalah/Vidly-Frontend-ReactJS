@@ -7,12 +7,7 @@ class Main extends Component {
   };
 
   render() {
-    return (
-      <React.Fragment>
-        <h1>PLEASE</h1>
-        {this.movieCheck()}
-      </React.Fragment>
-    );
+    return <React.Fragment>{this.movieCheck()}</React.Fragment>;
   }
 
   movieCheck() {
@@ -39,7 +34,12 @@ class Main extends Component {
                 <td>{movie.numberInStock}</td>
                 <td>{movie.dailyRentalRate}</td>
                 <td>
-                  <button className="btn btn-dark">Delete</button>
+                  <button
+                    onClick={() => this.handleDelete(movie)}
+                    className="btn btn-dark"
+                  >
+                    Delete
+                  </button>
                 </td>
               </tr>
             ))}
@@ -49,7 +49,10 @@ class Main extends Component {
     );
   }
 
-  deleteButton() {}
+  handleDelete = (movie) => {
+    const movies = this.state.movies.filter((m) => m._id !== movie._id);
+    this.setState({ movies });
+  };
 }
 
 export default Main;
