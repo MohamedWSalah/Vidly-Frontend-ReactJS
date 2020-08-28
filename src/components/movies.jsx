@@ -1,7 +1,10 @@
 import React, { Component } from "react";
 import { getMovies } from "../services/fakeMovieService";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faHeart } from "@fortawesome/free-solid-svg-icons";
+import Like from "./common/like";
 
-class Main extends Component {
+class Movies extends Component {
   state = {
     movies: getMovies(),
   };
@@ -15,7 +18,9 @@ class Main extends Component {
       <h1>There is no movies in the list {this.state.movies.length}</h1>
     ) : (
       <React.Fragment>
-        <p>There is {this.state.movies.length} Movies Stored</p>
+        <p style={{ margin: 10 }}>
+          There is {this.state.movies.length} Movies Stored
+        </p>
         <table className="table">
           <thead>
             <tr>
@@ -23,6 +28,7 @@ class Main extends Component {
               <th>Genre</th>
               <th>Stock</th>
               <th>Rate</th>
+              <th>Like</th>
               <th>Delete?</th>
             </tr>
           </thead>
@@ -33,6 +39,10 @@ class Main extends Component {
                 <td>{movie.genre.name}</td>
                 <td>{movie.numberInStock}</td>
                 <td>{movie.dailyRentalRate}</td>
+                <Like
+                  liked={movie.liked}
+                  onClick={() => this.handleLike(movie)}
+                />
                 <td>
                   <button
                     onClick={() => this.handleDelete(movie)}
@@ -53,6 +63,13 @@ class Main extends Component {
     const movies = this.state.movies.filter((m) => m._id !== movie._id);
     this.setState({ movies });
   };
+
+  handleLike = (movie) => {
+    const movies = [...this.state.movies];
+    const index = movies.indexOf(movie);
+    movies[index].liked = !movies[index].liked;
+    this.setState({ movies });
+  };
 }
 
-export default Main;
+export default Movies;
