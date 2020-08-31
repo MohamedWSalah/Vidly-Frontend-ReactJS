@@ -1,16 +1,26 @@
 import React, { Component } from "react";
 
 class GenreList extends Component {
-  state = {};
   render() {
+    const { onGenreSelect, selectedItem, genres } = this.props;
+
     return (
       <React.Fragment>
-        <ul class="list-group">
-          <li class="list-group-item active">Cras justo odio</li>
-          <li class="list-group-item">Dapibus ac facilisis in</li>
-          <li class="list-group-item">Morbi leo risus</li>
-          <li class="list-group-item">Porta ac consectetur ac</li>
-          <li class="list-group-item">Vestibulum at eros</li>
+        <ul className="list-group">
+          {genres.map((G) => (
+            <li
+              key={G._id}
+              className={
+                G === selectedItem
+                  ? "list-group-item active"
+                  : "list-group-item"
+              }
+              style={{ cursor: "pointer" }}
+              onClick={() => onGenreSelect(G)}
+            >
+              {G.name}
+            </li>
+          ))}
         </ul>
       </React.Fragment>
     );

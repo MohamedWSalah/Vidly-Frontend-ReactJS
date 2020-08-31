@@ -1,35 +1,57 @@
 import React, { Component } from "react";
 import { getMovies } from "../services/fakeMovieService";
+import { getGenres } from "../services/fakeGenreService";
 import Pagination from "./common/pagination";
 import Like from "./common/like";
 import { paginate } from "../utils/paginate";
 import GenreList from "./genreList";
 class Movies extends Component {
   state = {
-    movies: getMovies(),
+    movies: [],
+    genres: [],
     deletebtn: "btn btn-dark",
     pageSize: 4,
     currentPage: 1,
   };
 
-  render() {
-    const { currentPage, pageSize, movies: allMovies } = this.state;
-
-    const movies = paginate(allMovies, currentPage, pageSize);
-    return <React.Fragment>{this.movieCheck(movies)}</React.Fragment>;
+  componentDidMount() {
+    const genres = [{ name: "All Genres" }, ...getGenres()];
+    console.log(genres, "asdas");
+    this.setState({ movies: getMovies(), genres });
   }
 
-  movieCheck(M) {
+  render() {
+    const {
+      currentPage,
+      pageSize,
+      movies: allMovies,
+      selectedGenre,
+    } = this.state;
+
+    const filtered =
+      selectedGenre && selectedGenre._id
+        ? allMovies.filter((m) => m.genre._id === selectedGenre._id)
+        : allMovies;
+
+    const movies = paginate(filtered, currentPage, pageSize);
+    return <React.Fragment>{this.movieCheck(movies, filtered)}</React.Fragment>;
+  }
+
+  movieCheck(M, filtered) {
     return this.state.movies.length === 0 ? (
       <h1>There is no movies in the list {this.state.movies.length}</h1>
     ) : (
       <div>
         <div className="row m-2">
-          <GenreList></GenreList>
+          <GenreList
+            genres={this.state.genres}
+            selectedItem={this.state.selectedGenre}
+            onGenreSelect={this.genreSelect}
+          ></GenreList>
 
-          <div class="col">
+          <div className="col">
             <p style={{ margin: 10 }}>
-              There is {this.state.movies.length} Movies Stored
+              There is {filtered.length} Movies Stored
             </p>
             <table className="table">
               <thead>
@@ -68,7 +90,7 @@ class Movies extends Component {
               </tbody>
             </table>
             <Pagination
-              itemsCount={this.state.movies.length}
+              itemsCount={filtered.length}
               pageSize={this.state.pageSize}
               onPageChange={this.handlePageChange}
               currentPage={this.state.currentPage}
@@ -110,6 +132,10 @@ class Movies extends Component {
   handlePageChange = (page) => {
     console.log(page);
     this.setState({ currentPage: page });
+  };
+
+  genreSelect = (genre) => {
+    this.setState({ selectedGenre: genre, currentPage: 1 });
   };
 }
 
