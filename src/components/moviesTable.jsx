@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import Like from "./common/like";
+import Delete from "./common/deletebutton";
 
 class MoviesTable extends Component {
   raiseSort = (path) => {
@@ -44,14 +45,13 @@ class MoviesTable extends Component {
               <td>{movie.dailyRentalRate}</td>
               <Like liked={movie.liked} onClick={() => handleLike(movie)} />
               <td>
-                <button
-                  onClick={() => handleDelete(movie)}
-                  className={deletebtn}
-                  onMouseEnter={deleteBtnIn}
-                  onMouseLeave={deleteBtnOut}
-                >
-                  Delete
-                </button>
+                <Delete
+                  handleDelete={handleDelete}
+                  deletebtn={deletebtn}
+                  deleteBtnIn={deleteBtnIn}
+                  deleteBtnOut={deleteBtnOut}
+                  movie={movie}
+                ></Delete>
               </td>
             </tr>
           ))}

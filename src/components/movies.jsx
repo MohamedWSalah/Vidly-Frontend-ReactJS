@@ -61,7 +61,6 @@ class Movies extends Component {
               handleDelete={this.handleDelete}
               deleteBtnIn={this.deleteBtnIn}
               deleteBtnOut={this.deleteBtnOut}
-              deletebtn={this.state.deletebtn}
               handleLike={this.handleLike}
               onSort={this.handleSort}
               sortColumn={sortColumn}
@@ -88,22 +87,6 @@ class Movies extends Component {
     const index = movies.indexOf(movie);
     movies[index].liked = !movies[index].liked;
     this.setState({ movies });
-  };
-
-  deleteBtnIn = (movie) => {
-    let deletebtn = this.state.deletebtn;
-    deletebtn === "btn btn-danger"
-      ? (deletebtn = "btn btn-dark")
-      : (deletebtn = "btn btn-danger");
-    this.setState({ deletebtn });
-  };
-
-  deleteBtnOut = () => {
-    let deletebtn = this.state.deletebtn;
-    deletebtn === "btn btn-dark"
-      ? (deletebtn = "btn btn-danger")
-      : (deletebtn = "btn btn-dark");
-    this.setState({ deletebtn });
   };
 
   handlePageChange = (page) => {
