@@ -9,13 +9,15 @@ class like extends Component {
     if (!this.props.liked) classes += "-o";
 
     return (
-      <i
-        className={classes}
-        onClick={this.props.onClick}
-        style={{ cursor: "pointer" }}
-        onMouseEnter={this.onMouseEnter}
-        onMouseLeave={this.onMouseLeave}
-      ></i>
+      <td>
+        <i
+          className={classes}
+          onClick={this.props.onClick}
+          style={{ cursor: "pointer" }}
+          onMouseEnter={this.onMouseEnter}
+          onMouseLeave={this.onMouseLeave}
+        ></i>
+      </td>
     );
   }
 

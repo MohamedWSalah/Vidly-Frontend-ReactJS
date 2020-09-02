@@ -2,9 +2,12 @@ import React, { Component } from "react";
 import { getMovies } from "../services/fakeMovieService";
 import { getGenres } from "../services/fakeGenreService";
 import Pagination from "./common/pagination";
-import Like from "./common/like";
+
 import { paginate } from "../utils/paginate";
 import GenreList from "./genreList";
+import MoviesTable from "./moviesTable";
+import _ from "lodash";
+
 class Movies extends Component {
   state = {
     movies: [],
@@ -12,11 +15,11 @@ class Movies extends Component {
     deletebtn: "btn btn-dark",
     pageSize: 4,
     currentPage: 1,
+    sortColumn: { path: "title", order: "asc" },
   };
 
   componentDidMount() {
-    const genres = [{ name: "All Genres" }, ...getGenres()];
-    console.log(genres, "asdas");
+    const genres = [{ _id: "", name: "All Genres" }, ...getGenres()];
     this.setState({ movies: getMovies(), genres });
   }
 
@@ -26,6 +29,7 @@ class Movies extends Component {
       pageSize,
       movies: allMovies,
       selectedGenre,
+      sortColumn,
     } = this.state;
 
     const filtered =
@@ -33,14 +37,13 @@ class Movies extends Component {
         ? allMovies.filter((m) => m.genre._id === selectedGenre._id)
         : allMovies;
 
-    const movies = paginate(filtered, currentPage, pageSize);
-    return <React.Fragment>{this.movieCheck(movies, filtered)}</React.Fragment>;
-  }
+    const sorted = _.orderBy(filtered, [sortColumn.path], [sortColumn.order]);
 
-  movieCheck(M, filtered) {
-    return this.state.movies.length === 0 ? (
-      <h1>There is no movies in the list {this.state.movies.length}</h1>
-    ) : (
+    const movies = paginate(sorted, currentPage, pageSize);
+    if (this.state.movies.length === 0)
+      return <h1>There is no movies in the list {this.state.movies.length}</h1>;
+
+    return (
       <div>
         <div className="row m-2">
           <GenreList
@@ -53,42 +56,16 @@ class Movies extends Component {
             <p style={{ margin: 10 }}>
               There is {filtered.length} Movies Stored
             </p>
-            <table className="table">
-              <thead>
-                <tr>
-                  <th>Title</th>
-                  <th>Genre</th>
-                  <th>Stock</th>
-                  <th>Rate</th>
-                  <th>Like</th>
-                  <th>Delete?</th>
-                </tr>
-              </thead>
-              <tbody>
-                {M.map((movie) => (
-                  <tr key={movie._id}>
-                    <td>{movie.title}</td>
-                    <td>{movie.genre.name}</td>
-                    <td>{movie.numberInStock}</td>
-                    <td>{movie.dailyRentalRate}</td>
-                    <Like
-                      liked={movie.liked}
-                      onClick={() => this.handleLike(movie)}
-                    />
-                    <td>
-                      <button
-                        onClick={() => this.handleDelete(movie)}
-                        className={this.state.deletebtn}
-                        onMouseEnter={() => this.deleteBtnIn()}
-                        onMouseLeave={() => this.deleteBtnOut()}
-                      >
-                        Delete
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+            <MoviesTable
+              movies={movies}
+              handleDelete={this.handleDelete}
+              deleteBtnIn={this.deleteBtnIn}
+              deleteBtnOut={this.deleteBtnOut}
+              deletebtn={this.state.deletebtn}
+              handleLike={this.handleLike}
+              onSort={this.handleSort}
+              sortColumn={sortColumn}
+            ></MoviesTable>
             <Pagination
               itemsCount={filtered.length}
               pageSize={this.state.pageSize}
@@ -113,7 +90,7 @@ class Movies extends Component {
     this.setState({ movies });
   };
 
-  deleteBtnIn = (id) => {
+  deleteBtnIn = (movie) => {
     let deletebtn = this.state.deletebtn;
     deletebtn === "btn btn-danger"
       ? (deletebtn = "btn btn-dark")
@@ -121,7 +98,7 @@ class Movies extends Component {
     this.setState({ deletebtn });
   };
 
-  deleteBtnOut = (id) => {
+  deleteBtnOut = () => {
     let deletebtn = this.state.deletebtn;
     deletebtn === "btn btn-dark"
       ? (deletebtn = "btn btn-danger")
@@ -130,12 +107,15 @@ class Movies extends Component {
   };
 
   handlePageChange = (page) => {
-    console.log(page);
     this.setState({ currentPage: page });
   };
 
   genreSelect = (genre) => {
     this.setState({ selectedGenre: genre, currentPage: 1 });
+  };
+
+  handleSort = (sortColumn) => {
+    this.setState({ sortColumn });
   };
 }
 
